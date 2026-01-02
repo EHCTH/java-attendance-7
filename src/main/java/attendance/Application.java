@@ -1,7 +1,12 @@
 package attendance;
 
+import attendance.bootstrap.AppConfig;
+import attendance.interfaces.inbound.Controller;
+
 public class Application {
     public static void main(String[] args) {
-        // TODO: 프로그램 구현
+        AppConfig config = new AppConfig();
+        Controller controller = config.controller();
+        controller.run();
     }
 }
