@@ -13,20 +13,22 @@ import java.util.List;
 public class CsvWriter {
     private final Path resourceDir;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     public CsvWriter() {
         this.resourceDir = Paths.get("src", "main", "resources");
     }
 
-    public Path writeNewFile(String fileName, List<String> lines) {
+    public void writeNewFile(String fileName, String header, List<String> lines) {
         try {
-            Files.createDirectories(resourceDir);
 
+            Files.createDirectories(resourceDir);
             Path target = resourceDir.resolve(fileName);
-            Files.write(target, lines, StandardCharsets.UTF_8,
+            List<String> writeLine = new ArrayList<>(lines);
+            writeLine.addFirst(header);
+            Files.write(target, writeLine, StandardCharsets.UTF_8,
                     StandardOpenOption.CREATE,
                     StandardOpenOption.TRUNCATE_EXISTING);
 
-            return target;
         } catch (IOException e) {
             throw new IllegalArgumentException("[ERROR] resources에 파일을 저장할 수 없습니다: " + fileName, e);
         }
@@ -38,6 +40,7 @@ public class CsvWriter {
             Files.createDirectories(resourceDir);
 
             Path target = resourceDir.resolve(fileName);
+            System.out.println(target.getFileName());
             boolean needHeader = Files.notExists(target) || Files.size(target) == 0;
 
             List<String> toWrite = new ArrayList<>();
