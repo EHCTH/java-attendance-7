@@ -43,8 +43,8 @@ public class Controller {
         do {
             menuOption = retryUntilSuccess(() -> inputView.promptMenuOption(today));
             options.get(menuOption).run();
+            dataInitializer.fetch();
         } while (menuOption.isRetry());
-        dataInitializer.fetch();
     }
 
     private void checkIn() {

@@ -50,8 +50,8 @@ public class DataInitializer {
                 .flatMap(a -> createWriteData(a).stream())
                 .toList();
 
-        csvWriter.appendWithHeaderIfNew(
-                "attendances-generated.csv",
+        csvWriter.writeNewFile(
+                "attendances.csv",
                 "name,datetime",
                 lines
         );
