@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class DataInitializer {
@@ -37,6 +38,11 @@ public class DataInitializer {
 
         attendances.forEach(attendance -> attendance.fills(past, today));
         attendances.forEach(repository::save);
+
+        // TODO 테스트
+        List<Attendance> collect = csvReader.read().stream()
+                .collect(toAttendances());
+
     }
     public void fetch() {
         List<String> lines = repository.findAll()
@@ -91,5 +97,20 @@ public class DataInitializer {
                                 Collectors.toList()
                         )
                 ));
+    }
+
+    private Collector<CsvMapper.Row, ?, List<Attendance>> toAttendances() {
+        return Collectors.collectingAndThen(
+                Collectors.groupingBy(
+                        CsvMapper.Row::name,
+                        Collectors.collectingAndThen(
+                                Collectors.mapping(r -> Period.present(r.localDateTime()), Collectors.toList()),
+                                Records::new
+                        )
+                ),
+                map -> map.entrySet().stream()
+                        .map(e -> new Attendance(e.getKey(), e.getValue()))
+                        .toList()
+        );
     }
 }
